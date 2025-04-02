@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карта СВО от военных экспертов</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+            overflow: hidden;
+        }
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+        .sidebar {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 250px;
+            background: rgba(40, 40, 40, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1;
+        }
+        .sidebar h2 {
+            font-size: 18px;
+            margin: 0 0 10px;
+        }
+        .sidebar button {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            background: #444;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .sidebar button:hover {
+            background: #666;
+        }
+        .legend {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(40, 40, 40, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1;
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+        }
+        .legend span {
+            display: flex;
+            align-items: center;
+        }
+        .legend .icon {
+            margin-right: 5px;
+            font-size: 20px;
+        }
+        .legend .red-circle, .legend .blue-square {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            font-weight: bold;
+        }
+        .legend .red-circle {
+            background-color: #ff0000;
+            color: #fff;
+            border-radius: 50%; /* Оставляем круг для красного */
+        }
+        .legend .blue-square {
+            background-color: #0000ff;
+            color: #fff;
+            /* Убираем border-radius, чтобы сделать квадрат */
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Управление</h2>
+        <button>Обновить карту</button>
+        <button>Фильтр зон</button>
+        <button>Слои</button>
+    </div>
+    <div id="map"></div>
+    <div class="legend">
+        <span><span class="icon red-circle">F</span> Зона конфликта</span>
+        <span><span class="icon blue-square">F</span> Зона контроля</span>
+        <span><span class="icon">🇷🇺</span> Контроль РФ</span>
+        <span><span class="icon">🇺🇦</span> Контроль ВСУ</span>
+        <span><span class="icon">🇺🇦</span> Серая зона</span>
+    </div>
+
+    <!-- Подключение Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaj-GmUOglIArIzMLgmsAmfws7Awz2L8A&callback=initMap" async defer></script>
+    <script>
+        function initMap() {
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 7,
+                center: { lat: 46.80534650477083, lng: 34.79917286964727 },
+                mapTypeId: "satellite",
+                styles: [
+                    { elementType: "geometry", stylers: [{ color: "#212121" }] },
+                    { elementType: "labels", stylers: [{ visibility: "off" }] }
+                ]
+            });
+
+            const kmlLayer = new google.maps.KmlLayer({
+                url: "https://www.google.com/maps/d/kml?mid=1l_XF1EMjv8uJUGLl9UUDxF6a2Q8KeEc",
+                map: map
+            });
+
+            kmlLayer.addListener("status_changed", () => {
+                if (kmlLayer.getStatus() !== "OK") {
+                    console.error("Ошибка загрузки KML: " + kmlLayer.getStatus());
+                }
+            });
+        }
+    </script>
+</body>
+</html>
